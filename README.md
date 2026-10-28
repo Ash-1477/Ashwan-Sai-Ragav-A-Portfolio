@@ -45,7 +45,7 @@ All personal and technical details in this portfolio are strictly verified again
 | **Databases** | MySQL, MongoDB | Technical Skills card |
 | **Tools** | Git, GitHub, VS Code, Linux, Docker (Basics), Firebase (Basics) | Technical Skills card |
 | **Certifications** | Oracle (OCI Foundation, OCI AI Foundation, Data Platform) & Cisco (Networking 1 & 2) | Official Certifications card |
-| **Achievements** | 450+ LeetCode problems solved, EY Techathon 6.0, E-Summit '25 | Achievements banner & milestones cards |
+| **Achievements** | 425+ LeetCode problems solved, EY Techathon 6.0, E-Summit '25 | Achievements banner & milestones cards |
 | **Contact** | Email: `ashwansairagav9522@gmail.com`<br>LinkedIn: `linkedin.com/in/ashwan-sai-ragav`<br>GitHub: `github.com/Ash-1477` | Public contact options |
 | **Phone** | `9940346881` | **Omitted** from public display as requested |
 
