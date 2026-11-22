@@ -149,3 +149,9 @@ header nav a:hover,header nav a:focus-visible{color:#fff}
 }
 @media(max-width:420px){.os-skills-grid{grid-template-columns:1fr}.os-skill-card{min-height:190px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.os-reveal{opacity:1;transform:none;transition:none}.os-timeline-card,.os-skill-card{transform:none!important}}
+
+/* Final interaction polish */
+header nav a[aria-current="location"]{color:#f4edff!important;position:relative}
+header nav a[aria-current="location"]::after{content:"";position:absolute;left:0;right:0;bottom:-9px;height:2px;border-radius:2px;background:linear-gradient(90deg,#9b72f5,#e3c9ff);box-shadow:0 0 12px rgba(183,145,255,.6)}
+a:focus-visible,button:focus-visible{outline:2px solid #c4a7ff;outline-offset:4px;border-radius:8px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
