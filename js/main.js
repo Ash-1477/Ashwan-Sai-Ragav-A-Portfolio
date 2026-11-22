@@ -118,30 +118,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 3200);
   }
 
-  // 4. Highlight Active Link on Scroll
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-link');
+  // 4. Highlight the current section with semantic state (violet theme).
+  const sections = document.querySelectorAll('main section[id]');
+  const navLinks = document.querySelectorAll('header nav a[href^="#"]');
 
-  function updateActiveNav() {
-    const scrollY = window.pageYOffset;
-
-    sections.forEach(current => {
-      const sectionHeight = current.offsetHeight;
-      const sectionTop = current.offsetTop - 120;
-      const sectionId = current.getAttribute('id');
-
-      if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-        navLinks.forEach(link => {
-          link.classList.remove('text-blue-600', 'font-semibold');
-          link.classList.add('text-slate-600');
-          if (link.getAttribute('href') === `#${sectionId}`) {
-            link.classList.add('text-blue-600', 'font-semibold');
-            link.classList.remove('text-slate-600');
-          }
-        });
+  function setCurrentSection(sectionId) {
+    navLinks.forEach(link => {
+      if (link.getAttribute('href') === '#' + sectionId) {
+        link.setAttribute('aria-current', 'location');
+      } else {
+        link.removeAttribute('aria-current');
       }
     });
   }
 
-  window.addEventListener('scroll', updateActiveNav, { passive: true });
+  if ('IntersectionObserver' in window) {
+    const sectionObserver = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter(entry => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (visible) setCurrentSection(visible.target.id);
+    }, {
+      rootMargin: '-22% 0px -62% 0px',
+      threshold: [0, 0.15, 0.35, 0.6]
+    });
+    sections.forEach(section => sectionObserver.observe(section));
+  } else {
+    const updateCurrentSection = () => {
+      let current = sections[0];
+      sections.forEach(section => {
+        if (section.getBoundingClientRect().top <= window.innerHeight * 0.35) current = section;
+      });
+      if (current) setCurrentSection(current.id);
+    };
+    window.addEventListener('scroll', updateCurrentSection, { passive: true });
+    updateCurrentSection();
+  }
+
 });
