@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Brief boot sequence: a small signature moment, never blocks navigation.
-  if (!reduceMotion && !sessionStorage.getItem('ashwan-os-booted')) {
+  if (!reduceMotion) {
     const boot = document.createElement('div');
     boot.className = 'os-boot';
     boot.setAttribute('aria-label', 'ASHWAN.OS loading');
@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.appendChild(boot);
     window.setTimeout(() => {
       boot.classList.add('is-gone');
-      sessionStorage.setItem('ashwan-os-booted', '1');
       window.setTimeout(() => boot.remove(), 700);
     }, 1050);
   }
