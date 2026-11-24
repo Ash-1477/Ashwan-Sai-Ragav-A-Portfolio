@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Signature ASHWAN.OS boot sequence: ~1.5s total, without delaying page initialization.
-  if (!reduceMotion) {
+  {
     const bootStyles = document.createElement('style');
     bootStyles.textContent = `
       .os-boot{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 50% 45%,rgba(91,48,151,.28),transparent 42%),#080510;color:#f7f1ff;opacity:1;visibility:visible;transition:opacity .35s ease,visibility .35s ease}
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .os-boot-track{height:2px;margin:26px auto 0;max-width:260px;overflow:hidden;background:rgba(190,160,255,.18)}
       .os-boot-track:after{content:"";display:block;width:42%;height:100%;background:linear-gradient(90deg,#8b5cf6,#e5caff);box-shadow:0 0 14px #a78bfa;animation:os-boot-progress 1.1s ease-out forwards}
       @keyframes os-boot-progress{from{transform:translateX(-110%)}to{transform:translateX(240%)}}
-      @media(prefers-reduced-motion:reduce){.os-boot{display:none}}
+      @media(prefers-reduced-motion:reduce){.os-boot-track:after{animation:none;width:72%;transform:translateX(18%)}.os-boot{transition:none}}
     `;
     document.head.appendChild(bootStyles);
     const boot = document.createElement('div');
