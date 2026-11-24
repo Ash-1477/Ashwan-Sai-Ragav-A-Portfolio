@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.setTimeout(() => {
       boot.classList.add('is-gone');
       window.setTimeout(() => { boot.remove(); bootStyles.remove(); }, 380);
-    }, 1120);
+    }, 1500);
   }
 
   // Scroll progress indicator.
