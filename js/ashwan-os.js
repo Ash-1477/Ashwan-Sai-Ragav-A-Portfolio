@@ -2,6 +2,34 @@
 document.addEventListener('DOMContentLoaded', () => {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Signature ASHWAN.OS boot sequence: ~1.5s total, without delaying page initialization.
+  if (!reduceMotion) {
+    const bootStyles = document.createElement('style');
+    bootStyles.textContent = `
+      .os-boot{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 50% 45%,rgba(91,48,151,.28),transparent 42%),#080510;color:#f7f1ff;opacity:1;visibility:visible;transition:opacity .35s ease,visibility .35s ease}
+      .os-boot.is-gone{opacity:0;visibility:hidden;pointer-events:none}
+      .os-boot-inner{width:min(420px,100%);text-align:center}
+      .os-boot-label{font:10px 'DM Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#b9a8d5}
+      .os-boot-mark{margin:22px 0;font:800 clamp(38px,9vw,64px) Manrope,sans-serif;letter-spacing:-.09em;color:#fff;text-shadow:0 0 32px rgba(174,126,255,.45)}
+      .os-boot-mark span{color:#b69cff}
+      .os-boot-track{height:2px;margin:26px auto 0;max-width:260px;overflow:hidden;background:rgba(190,160,255,.18)}
+      .os-boot-track:after{content:"";display:block;width:42%;height:100%;background:linear-gradient(90deg,#8b5cf6,#e5caff);box-shadow:0 0 14px #a78bfa;animation:os-boot-progress 1.1s ease-out forwards}
+      @keyframes os-boot-progress{from{transform:translateX(-110%)}to{transform:translateX(240%)}}
+      @media(prefers-reduced-motion:reduce){.os-boot{display:none}}
+    `;
+    document.head.appendChild(bootStyles);
+    const boot = document.createElement('div');
+    boot.className = 'os-boot';
+    boot.setAttribute('role', 'status');
+    boot.setAttribute('aria-label', 'ASHWAN.OS booting');
+    boot.innerHTML = '<div class="os-boot-inner"><div class="os-boot-label">Personal interface · v1.0</div><div class="os-boot-mark">ASHWAN<span>.OS</span></div><div class="os-boot-label">Initializing portfolio experience</div><div class="os-boot-track"></div></div>';
+    document.body.appendChild(boot);
+    window.setTimeout(() => {
+      boot.classList.add('is-gone');
+      window.setTimeout(() => { boot.remove(); bootStyles.remove(); }, 380);
+    }, 1120);
+  }
+
   // Scroll progress indicator.
   const progress = document.createElement('div');
   progress.className = 'os-progress';
