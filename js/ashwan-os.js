@@ -2,19 +2,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Brief boot sequence: a small signature moment, never blocks navigation.
-  if (!reduceMotion) {
-    const boot = document.createElement('div');
-    boot.className = 'os-boot';
-    boot.setAttribute('aria-label', 'ASHWAN.OS loading');
-    boot.innerHTML = '<div class="os-boot-inner"><div class="os-boot-label">Personal interface · v1.0</div><div class="os-boot-mark">ASHWAN<span>.OS</span></div><div class="os-boot-label">Loading portfolio experience</div><div class="os-boot-track"></div></div>';
-    document.body.appendChild(boot);
-    window.setTimeout(() => {
-      boot.classList.add('is-gone');
-      window.setTimeout(() => boot.remove(), 700);
-    }, 1050);
-  }
-
   // Scroll progress indicator.
   const progress = document.createElement('div');
   progress.className = 'os-progress';
@@ -25,8 +12,17 @@ document.addEventListener('DOMContentLoaded', () => {
     progress.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0) + '%';
   };
   updateProgress();
-  window.addEventListener('scroll', updateProgress, { passive: true });
-  window.addEventListener('resize', updateProgress);
+  let progressQueued = false;
+  const queueProgressUpdate = () => {
+    if (progressQueued) return;
+    progressQueued = true;
+    window.requestAnimationFrame(() => {
+      updateProgress();
+      progressQueued = false;
+    });
+  };
+  window.addEventListener('scroll', queueProgressUpdate, { passive: true });
+  window.addEventListener('resize', queueProgressUpdate, { passive: true });
 
   // Staggered reveal as sections enter the viewport.
   const revealTargets = document.querySelectorAll('main section .container > *, main section .portfolio-card, main section .grid > *');
