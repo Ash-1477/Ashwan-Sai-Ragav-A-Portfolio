@@ -2,17 +2,32 @@
 document.addEventListener('DOMContentLoaded', () => {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Brief boot sequence: a small signature moment, never blocks navigation.
-  if (!reduceMotion) {
+  // Signature ASHWAN.OS boot sequence: ~1.5s total, without delaying page initialization.
+  {
+    const bootStyles = document.createElement('style');
+    bootStyles.textContent = `
+      .os-boot{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 50% 45%,rgba(91,48,151,.28),transparent 42%),#080510;color:#f7f1ff;opacity:1;visibility:visible;transition:opacity .35s ease,visibility .35s ease}
+      .os-boot.is-gone{opacity:0;visibility:hidden;pointer-events:none}
+      .os-boot-inner{width:min(420px,100%);text-align:center}
+      .os-boot-label{font:10px 'DM Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#b9a8d5}
+      .os-boot-mark{margin:22px 0;font:800 clamp(38px,9vw,64px) Manrope,sans-serif;letter-spacing:-.09em;color:#fff;text-shadow:0 0 32px rgba(174,126,255,.45)}
+      .os-boot-mark span{color:#b69cff}
+      .os-boot-track{height:2px;margin:26px auto 0;max-width:260px;overflow:hidden;background:rgba(190,160,255,.18)}
+      .os-boot-track:after{content:"";display:block;width:42%;height:100%;background:linear-gradient(90deg,#8b5cf6,#e5caff);box-shadow:0 0 14px #a78bfa;animation:os-boot-progress 1.1s ease-out forwards}
+      @keyframes os-boot-progress{from{transform:translateX(-110%)}to{transform:translateX(240%)}}
+      @media(prefers-reduced-motion:reduce){.os-boot-track:after{animation:none;width:72%;transform:translateX(18%)}.os-boot{transition:none}}
+    `;
+    document.head.appendChild(bootStyles);
     const boot = document.createElement('div');
     boot.className = 'os-boot';
-    boot.setAttribute('aria-label', 'ASHWAN.OS loading');
-    boot.innerHTML = '<div class="os-boot-inner"><div class="os-boot-label">Personal interface · v1.0</div><div class="os-boot-mark">ASHWAN<span>.OS</span></div><div class="os-boot-label">Loading portfolio experience</div><div class="os-boot-track"></div></div>';
+    boot.setAttribute('role', 'status');
+    boot.setAttribute('aria-label', 'ASHWAN.OS booting');
+    boot.innerHTML = '<div class="os-boot-inner"><div class="os-boot-label">Personal interface · v1.0</div><div class="os-boot-mark">ASHWAN<span>.OS</span></div><div class="os-boot-label">Initializing portfolio experience</div><div class="os-boot-track"></div></div>';
     document.body.appendChild(boot);
     window.setTimeout(() => {
       boot.classList.add('is-gone');
-      window.setTimeout(() => boot.remove(), 700);
-    }, 1050);
+      window.setTimeout(() => { boot.remove(); bootStyles.remove(); }, 380);
+    }, 1500);
   }
 
   // Scroll progress indicator.
@@ -25,8 +40,17 @@ document.addEventListener('DOMContentLoaded', () => {
     progress.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0) + '%';
   };
   updateProgress();
-  window.addEventListener('scroll', updateProgress, { passive: true });
-  window.addEventListener('resize', updateProgress);
+  let progressQueued = false;
+  const queueProgressUpdate = () => {
+    if (progressQueued) return;
+    progressQueued = true;
+    window.requestAnimationFrame(() => {
+      updateProgress();
+      progressQueued = false;
+    });
+  };
+  window.addEventListener('scroll', queueProgressUpdate, { passive: true });
+  window.addEventListener('resize', queueProgressUpdate, { passive: true });
 
   // Staggered reveal as sections enter the viewport.
   const revealTargets = document.querySelectorAll('main section .container > *, main section .portfolio-card, main section .grid > *');
