@@ -205,3 +205,12 @@ a:focus-visible,button:focus-visible{outline:2px solid #c4a7ff;outline-offset:4p
 @media (prefers-reduced-motion:reduce){
   #hero .hero-avatar-ring{animation:none!important}
 }
+
+
+/* Expanded credentials layout */
+.os-credentials-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+.os-credential-card ul{padding-left:18px;margin:18px 0 0;display:grid;gap:10px}
+.os-credential-card li{font-size:12px;line-height:1.65;color:#c2b4d2}
+.os-credential-provider{margin:22px 0 0;font:10px 'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#bda2ff}
+.os-credential-note{margin-top:22px;font-size:11px;color:#9f90b2}
+@media(max-width:760px){.os-credentials-grid{grid-template-columns:1fr}}
