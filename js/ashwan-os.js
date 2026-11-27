@@ -102,4 +102,25 @@ document.addEventListener('DOMContentLoaded', () => {
     dot.style.cssText = 'display:inline-block;width:7px;height:7px;border-radius:50%;background:#c4b5fd;box-shadow:0 0 12px #a78bfa;margin-right:8px;vertical-align:middle';
     heroEyebrow.prepend(dot);
   }
+
+  // Cinematic hero depth: restrained pointer parallax on the portrait and ambient hero glow.
+  const hero = document.querySelector('#hero');
+  const portrait = document.querySelector('.os-portrait-frame');
+  if (hero && portrait && !reduceMotion && window.matchMedia('(hover:hover) and (pointer:fine)').matches) {
+    let heroFrame = 0;
+    hero.addEventListener('pointermove', event => {
+      if (heroFrame) return;
+      heroFrame = window.requestAnimationFrame(() => {
+        const rect = hero.getBoundingClientRect();
+        const px = (event.clientX - rect.left) / rect.width - .5;
+        const py = (event.clientY - rect.top) / rect.height - .5;
+        portrait.style.transform = 'perspective(1100px) rotateY(' + (px * 7).toFixed(2) + 'deg) rotateX(' + (-py * 6).toFixed(2) + 'deg) translateY(-3px)';
+        hero.style.setProperty('--hero-pointer-x', (event.clientX - rect.left) + 'px');
+        hero.style.setProperty('--hero-pointer-y', (event.clientY - rect.top) + 'px');
+        heroFrame = 0;
+      });
+    }, { passive: true });
+    hero.addEventListener('pointerleave', () => { portrait.style.transform = ''; }, { passive: true });
+  }
+
 });
