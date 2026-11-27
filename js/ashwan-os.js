@@ -8,7 +8,14 @@ document.addEventListener('DOMContentLoaded', () => {
     bootStyles.textContent = `
       .os-boot{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 50% 45%,rgba(91,48,151,.28),transparent 42%),#080510;color:#f7f1ff;opacity:1;visibility:visible;transition:opacity .35s ease,visibility .35s ease}
       .os-boot.is-gone{opacity:0;visibility:hidden;pointer-events:none}
-      .os-boot-inner{width:min(420px,100%);text-align:center}
+      .os-boot-inner{width:min(460px,100%);text-align:center;position:relative}
+      .os-boot-orbit{width:132px;height:132px;border:1px solid #9fc4ff55;border-radius:50%;margin:0 auto 24px;position:relative;display:grid;place-items:center;box-shadow:0 0 42px rgba(139,183,255,.5),inset 0 0 30px rgba(139,183,255,.5)}
+      .os-boot-orbit:before,.os-boot-orbit:after{content:"";position:absolute;border:1px solid #9fc4ff44;border-radius:50%;inset:13px;transform:rotateX(68deg) rotate(-25deg)}
+      .os-boot-orbit:after{inset:27px;transform:rotateY(68deg) rotate(35deg)}
+      .os-boot-core{width:42px;height:42px;border-radius:13px;border:1px solid #9fc4ff88;background:radial-gradient(circle,rgba(139,183,255,.5),transparent 72%);box-shadow:0 0 28px rgba(139,183,255,.5);transform:rotate(45deg)}
+      .os-boot-status{display:flex;justify-content:space-between;max-width:260px;margin:14px auto 0;font:8px 'DM Mono',monospace;letter-spacing:.13em;color:#9fc4ff;opacity:.75}
+      @media(prefers-reduced-motion:no-preference){.os-boot-orbit{animation:os-boot-spin 12s linear infinite}.os-boot-core{animation:os-boot-pulse 2s ease-in-out infinite alternate}}
+      @keyframes os-boot-spin{to{transform:rotate(360deg)}}@keyframes os-boot-pulse{to{transform:rotate(45deg) scale(1.16);box-shadow:0 0 42px rgba(139,183,255,.5)}}
       .os-boot-label{font:10px 'DM Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#b9a8d5}
       .os-boot-mark{margin:22px 0;font:800 clamp(38px,9vw,64px) Manrope,sans-serif;letter-spacing:-.09em;color:#fff;text-shadow:0 0 32px rgba(174,126,255,.45)}
       .os-boot-mark span{color:#b69cff}
@@ -22,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     boot.className = 'os-boot';
     boot.setAttribute('role', 'status');
     boot.setAttribute('aria-label', 'ASHWAN.OS booting');
-    boot.innerHTML = '<div class="os-boot-inner"><div class="os-boot-label">Personal interface · v1.0</div><div class="os-boot-mark">ASHWAN<span>.OS</span></div><div class="os-boot-label">Initializing portfolio experience</div><div class="os-boot-track"></div></div>';
+    boot.innerHTML = '<div class="os-boot-inner"><div class="os-boot-label">PERSONAL INTERFACE · V1.0</div><div class="os-boot-orbit" aria-hidden="true"><div class="os-boot-core"></div></div><div class="os-boot-mark">ASHWAN<span>.OS</span></div><div class="os-boot-label">Initializing portfolio experience</div><div class="os-boot-track"></div><div class="os-boot-status"><span>DESIGN SYSTEM</span><span>ONLINE · 100%</span></div></div>';
     document.body.appendChild(boot);
     window.setTimeout(() => {
       boot.classList.add('is-gone');
@@ -102,4 +109,25 @@ document.addEventListener('DOMContentLoaded', () => {
     dot.style.cssText = 'display:inline-block;width:7px;height:7px;border-radius:50%;background:#c4b5fd;box-shadow:0 0 12px #a78bfa;margin-right:8px;vertical-align:middle';
     heroEyebrow.prepend(dot);
   }
+
+  // Cinematic hero depth: restrained pointer parallax on the portrait and ambient hero glow.
+  const hero = document.querySelector('#hero');
+  const portrait = document.querySelector('.os-portrait-frame');
+  if (hero && portrait && !reduceMotion && window.matchMedia('(hover:hover) and (pointer:fine)').matches) {
+    let heroFrame = 0;
+    hero.addEventListener('pointermove', event => {
+      if (heroFrame) return;
+      heroFrame = window.requestAnimationFrame(() => {
+        const rect = hero.getBoundingClientRect();
+        const px = (event.clientX - rect.left) / rect.width - .5;
+        const py = (event.clientY - rect.top) / rect.height - .5;
+        portrait.style.transform = 'perspective(1100px) rotateY(' + (px * 7).toFixed(2) + 'deg) rotateX(' + (-py * 6).toFixed(2) + 'deg) translateY(-3px)';
+        hero.style.setProperty('--hero-pointer-x', (event.clientX - rect.left) + 'px');
+        hero.style.setProperty('--hero-pointer-y', (event.clientY - rect.top) + 'px');
+        heroFrame = 0;
+      });
+    }, { passive: true });
+    hero.addEventListener('pointerleave', () => { portrait.style.transform = ''; }, { passive: true });
+  }
+
 });
